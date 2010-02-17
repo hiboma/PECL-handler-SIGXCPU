@@ -33,8 +33,13 @@
    +----------------------------------------------------------------------+
 */
 
-/* $ Id: $ */ 
+/* $ Id: $ */
 
+#include <stdio.h>
+#include <signal.h>
+#include <locale.h>
+#include <string.h>
+#include <stdarg.h>
 #include "php_handle_sigxcpu.h"
 
 #if HAVE_HANDLE_SIGXCPU
@@ -66,6 +71,38 @@ zend_module_entry handle_sigxcpu_module_entry = {
 ZEND_GET_MODULE(handle_sigxcpu)
 #endif
 
+#define DATE_FORMAT_LEN 128
+#define DATE_FORMAT "%a %b %d %T %Y"
+
+static int num_called = 0;
+void apache_errorlog(const char * format, ...)
+{
+	char date[DATE_FORMAT_LEN];
+	struct tm *ptime;
+	time_t t;
+	va_list ap;
+	
+	va_start(ap ,format);
+	t = time(NULL);
+	if(!setlocale(LC_TIME, "C")) {
+		perror("failed setlocale():");
+		return;
+	}
+	ptime = localtime(&t);
+	if(!ptime) {
+		perror("failed localtime():");
+		return;
+	}
+	if(!strftime(date, DATE_FORMAT_LEN, DATE_FORMAT, ptime)) {
+		perror("failed strftime():");
+		return;
+	}
+	fprintf(stderr, "[%s] [notice] ", date);
+	vfprintf(stderr, format, ap);
+	va_end(ap);
+	setlocale(LC_TIME, "");
+}
+
 static void sigaction_sigxcpu(int signum, siginfo_t *info, void *data)
 {
 	const char *server_name = getenv("SERVER_NAME");
@@ -82,15 +119,15 @@ static void sigaction_sigxcpu(int signum, siginfo_t *info, void *data)
 			
 }
 
-static void setup_sigaction
+static void setup_sigaction(void)
 {
-   struct sigaction sig;
-   memset(&sig, 0, sizeof(sig));
-   sig.sa_sigaction = sigaction_sigxcpu;
-   sig.sa_flags = 0; //SA_RESTART|SA_SIGINFO;
-   if(0 != sigaction(SIGXCPU, &sig, NULL)) {
-	   php_error(E_WARNING, "oops, failed set sigaction()");
-   }
+	struct sigaction sig;
+	memset(&sig, 0, sizeof(sig));
+	sig.sa_sigaction = sigaction_sigxcpu;
+	sig.sa_flags = 0; //SA_RESTART|SA_SIGINFO;
+	if(0 != sigaction(SIGXCPU, &sig, NULL)) {
+		php_error(E_WARNING, "oops, failed set sigaction()");
+	}
 	return SUCCESS;
 }
 
@@ -99,7 +136,7 @@ PHP_MINIT_FUNCTION(handle_sigxcpu)
 {
 
 	/* add your stuff here */
-
+	setup_sigaction();
 	return SUCCESS;
 }
 /* }}} */
@@ -109,7 +146,7 @@ PHP_MINIT_FUNCTION(handle_sigxcpu)
 PHP_MSHUTDOWN_FUNCTION(handle_sigxcpu)
 {
 	/* add your stuff here */
-	setup_sigaction();
+
 	return SUCCESS;
 }
 /* }}} */
