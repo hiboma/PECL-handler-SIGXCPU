@@ -1,0 +1,8 @@
+// $ Id: $
+// vim:ft=javascript
+
+ARG_ENABLE('handle_sigxcpu' , 'SIGXCPU PHP PECL extension', 'no');
+if (PHP_HANDLE_SIGXCPU == "yes") {
+  EXTENSION("handle_sigxcpu", "handle_sigxcpu.c");
+  AC_DEFINE("HAVE_HANDLE_SIGXCPU", 1, "handle_sigxcpu support");
+}

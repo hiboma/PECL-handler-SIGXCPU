@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<extension name="handle_sigxcpu" version="0.0.1">
+ <summary>SIGXCPU PHP PECL extension</summary>
+ <description>
+   PHP PECL extension module: signal handler for SIGXCPU
+ </description>
+
+  <maintainers>
+    <maintainer>
+      <user>hiboma</user>
+      <name>Hiroya Ito</name>
+      <email>hiroyan@gmail.com</email>
+<!--       <role></role> -->
+    </maintainer>
+  </maintainers>
+
+  <license>BSD</license>
+  <channel>__uri</channel>
+
+  <release>
+    <version>0.0.1</version>
+    <date>2010-02-17</date>
+    <state>alpha</state>
+    <notes>
+      sigxcpu test
+    </notes>
+  </release>
+ 
+<!--  <deps language="c" platform="unix"> -->
+<!--    <with name="libproj" defaults='/usr:/usr/local' testfile='include/projects.h'> -->
+<!--      <header name="projects.h" /> -->
+<!--      <lib    name="proj" platform="unix" function="pj_fwd" /> -->
+<!--    </with> -->
+<!--  </deps> -->
+</extension>

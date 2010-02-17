@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
+<package>
+
+  <name>handle_sigxcpu</name>
+  <summary>SIGXCPU PHP PECL extension</summary>
+  <description>
+   PHP PECL extension module: signal handler for SIGXCPU
+  </description>
+
+  <license>BSD</license>
+
+  <maintainers>
+    <maintainer>
+      <user>hiboma</user>
+      <name>Hiroya Ito</name>
+      <email>hiroyan@gmail.com</email>
+      <role>unknown</role>
+    </maintainer>
+  </maintainers>
+
+  <release>
+    <version>0.0.1</version>
+    <state>alpha</state>
+    <notes>      sigxcpu test
+</notes>
+    <date>2010-02-17</date>
+  </release>
+  <changelog>
+
+  </changelog>
+  <deps>
+    <dep type="php" rel="ge" version="4.0.0"/>
+  </deps>
+
+  <filelist>
+    <dir name="/">
+      <file role='doc' name='EXPERIMENTAL'/>
+      <file role='doc' name='CREDITS'/>
+      <file role='src' name='config.m4'/>
+      <file role='src' name='handle_sigxcpu.dsp'/>
+      <file role='src' name='config.w32'/>
+      <file role='src' name='handle_sigxcpu.c'/>
+      <file role='src' name='php_handle_sigxcpu.h'/>
+    </dir>
+  </filelist>
+</package>

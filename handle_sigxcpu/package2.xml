@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<package version="2.0" xmlns="http://pear.php.net/dtd/package-2.0"
+    xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+http://pear.php.net/dtd/tasks-1.0.xsd
+http://pear.php.net/dtd/package-2.0
+http://pear.php.net/dtd/package-2.0.xsd">
+
+  <name>handle_sigxcpu</name>
+  <channel>__uri</channel>
+
+  <summary>SIGXCPU PHP PECL extension</summary>
+
+  <description>
+   PHP PECL extension module: signal handler for SIGXCPU
+  </description>
+
+  <unknown>
+    <name>Hiroya Ito</name>
+    <user>hiboma</user>
+    <email>hiroyan@gmail.com</email>
+    <active>yes</active>
+  </unknown>
+
+  <date>2010-02-17</date>
+  <version>
+    <release>0.0.1</release>
+    <api>0.0.1</api>
+  </version>
+  <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+  </stability>
+
+  <license filesource="LICENSE">BSD</license>
+
+  <notes>
+      sigxcpu test
+
+  </notes>
+
+  <contents>
+    <dir name="/">
+      <file role='doc' name='EXPERIMENTAL'/>
+      <file role='doc' name='CREDITS'/>
+      <file role='src' name='config.m4'/>
+      <file role='src' name='handle_sigxcpu.dsp'/>
+      <file role='src' name='config.w32'/>
+      <file role='src' name='handle_sigxcpu.c'/>
+      <file role='src' name='php_handle_sigxcpu.h'/>
+    </dir>
+  </contents>
+
+  <dependencies>
+    <required>
+      <php>
+        <min>4.0.0</min>
+      </php>
+      <pearinstaller>
+        <min>1.4.0a1</min>
+      </pearinstaller>
+    </required>
+  </dependencies>
+
+  <providesextension>handle_sigxcpu</providesextension>
+
+  <extsrcrelease/>
+
+</package>
