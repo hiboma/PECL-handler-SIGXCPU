@@ -124,7 +124,7 @@ static void setup_sigaction(void)
 	struct sigaction sig;
 	memset(&sig, 0, sizeof(sig));
 	sig.sa_sigaction = sigaction_sigxcpu;
-	sig.sa_flags = 0; //SA_RESTART|SA_SIGINFO;
+	sig.sa_flags = SA_SIGINFO;
 	if(0 != sigaction(SIGXCPU, &sig, NULL)) {
 		php_error(E_WARNING, "oops, failed set sigaction()");
 	}
