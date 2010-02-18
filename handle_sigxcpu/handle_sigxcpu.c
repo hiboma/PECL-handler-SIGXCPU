@@ -44,12 +44,18 @@
 
 #if HAVE_HANDLE_SIGXCPU
 
+ZEND_EXTERN_MODULE_GLOBALS(handle_sigxcpu)
+
+static void php_handle_sigxcpu_init_globals(zend_handle_sigxcpu_globals *globals)
+{
+	//handle_sigxcpu_globals.enabled = 1;
+}
+
 /* {{{ handle_sigxcpu_functions[] */
 function_entry handle_sigxcpu_functions[] = {
 	{ NULL, NULL, NULL }
 };
 /* }}} */
-
 
 /* {{{ handle_sigxcpu_module_entry
  */
@@ -107,8 +113,8 @@ static void sigaction_sigxcpu(int signum, siginfo_t *info, void *data)
 {
 	const char *server_name = getenv("SERVER_NAME");
 	const char *remote_host = getenv("REMOTE_HOST");
-        if(!remote_host) 
-            remote_host = getenv("REMOTE_ADDR");
+	if(!remote_host)
+			remote_host = getenv("REMOTE_ADDR");
 
 	apache_errorlog("[%d] cacth SIGXCPU(%d) %s() at %s:%d %s %s\n",
 			info->si_pid,
@@ -124,6 +130,7 @@ static void sigaction_sigxcpu(int signum, siginfo_t *info, void *data)
 static void setup_sigaction(void)
 {
 	struct sigaction sig;
+
 	memset(&sig, 0, sizeof(sig));
 	sig.sa_sigaction = sigaction_sigxcpu;
 	sig.sa_flags = SA_SIGINFO;
@@ -135,9 +142,15 @@ static void setup_sigaction(void)
 /* {{{ PHP_MINIT_FUNCTION */
 PHP_MINIT_FUNCTION(handle_sigxcpu)
 {
+	ZEND_INIT_MODULE_GLOBALS(handle_sigxcpu,
+							php_handle_sigxcpu_init_globals, NULL);
+	REGISTER_INI_ENTRIES();
 
 	/* add your stuff here */
-	setup_sigaction();
+	if (handle_sigxcpu_globals.enabled) {
+		setup_sigaction();
+	}
+	
 	return SUCCESS;
 }
 /* }}} */
@@ -176,12 +189,14 @@ PHP_RSHUTDOWN_FUNCTION(handle_sigxcpu)
 /* {{{ PHP_MINFO_FUNCTION */
 PHP_MINFO_FUNCTION(handle_sigxcpu)
 {
-	php_info_print_box_start(0);
-	php_printf("<p>SIGXCPU PHP PECL extension</p>\n");
-	php_printf("<p>Version 0.0.1alpha (2010-02-17)</p>\n");
-	php_printf("<p><b>Authors:</b></p>\n");
-	php_printf("<p>Hiroya Ito &lt;hiroyan@gmail.com&gt; (unknown)</p>\n");
-	php_info_print_box_end();
+	php_info_print_table_start();
+	php_info_print_table_row(2, "Handle SIGXCPU", "enabled");
+	php_info_print_table_row(2, "Version", "0.0.1alpha");
+	php_info_print_table_end();
+	DISPLAY_INI_ENTRIES();
+	
+/* 	php_info_print_box_start(0); */
+/* 	php_info_print_box_end(); */
 	/* add your stuff here */
 
 }
