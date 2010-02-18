@@ -107,7 +107,9 @@ static void sigaction_sigxcpu(int signum, siginfo_t *info, void *data)
 {
 	const char *server_name = getenv("SERVER_NAME");
 	const char *remote_host = getenv("REMOTE_HOST");
-	
+        if(!remote_host) 
+            remote_host = getenv("REMOTE_ADDR");
+
 	apache_errorlog("[%d] cacth SIGXCPU(%d) %s() at %s:%d %s %s\n",
 			info->si_pid,
 			num_called++,
