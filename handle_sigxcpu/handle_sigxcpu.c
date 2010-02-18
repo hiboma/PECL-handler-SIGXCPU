@@ -128,7 +128,6 @@ static void setup_sigaction(void)
 	if(0 != sigaction(SIGXCPU, &sig, NULL)) {
 		php_error(E_WARNING, "oops, failed set sigaction()");
 	}
-	return SUCCESS;
 }
 
 /* {{{ PHP_MINIT_FUNCTION */
