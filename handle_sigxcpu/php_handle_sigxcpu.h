@@ -70,6 +70,22 @@ extern zend_module_entry handle_sigxcpu_module_entry;
 #define PHP_HANDLE_SIGXCPU_API
 #endif
 
+/* モジュールのグローバル変数を定義 */
+ZEND_BEGIN_MODULE_GLOBALS(handle_sigxcpu)
+	zend_bool enabled;
+ZEND_END_MODULE_GLOBALS(handle_sigxcpu)
+
+
+/* ここで宣言 */
+ZEND_DECLARE_MODULE_GLOBALS(handle_sigxcpu)
+
+/* php.ini のエントリを宣言 */
+PHP_INI_BEGIN()
+STD_PHP_INI_ENTRY("handle_sigxcpu.enabled",		"1", PHP_INI_SYSTEM,
+                  OnUpdateBool, enabled, zend_handle_sigxcpu_globals, handle_sigxcpu_globals)
+PHP_INI_END()
+
+/* フックを登録 */
 PHP_MINIT_FUNCTION(handle_sigxcpu);
 PHP_MSHUTDOWN_FUNCTION(handle_sigxcpu);
 PHP_RINIT_FUNCTION(handle_sigxcpu);
