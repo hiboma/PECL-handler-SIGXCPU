@@ -72,17 +72,16 @@ extern zend_module_entry handle_sigxcpu_module_entry;
 
 /* モジュールのグローバル変数を定義 */
 ZEND_BEGIN_MODULE_GLOBALS(handle_sigxcpu)
-	zend_bool enabled;
+	zend_bool print_backtrace;
 ZEND_END_MODULE_GLOBALS(handle_sigxcpu)
-
 
 /* ここで宣言 */
 ZEND_DECLARE_MODULE_GLOBALS(handle_sigxcpu)
 
 /* php.ini のエントリを宣言 */
 PHP_INI_BEGIN()
-STD_PHP_INI_ENTRY("handle_sigxcpu.enabled",		"1", PHP_INI_SYSTEM,
-                  OnUpdateBool, enabled, zend_handle_sigxcpu_globals, handle_sigxcpu_globals)
+STD_PHP_INI_ENTRY("handle_sigxcpu.print_backtrace",		"0", PHP_INI_SYSTEM,
+                  OnUpdateBool, print_backtrace, zend_handle_sigxcpu_globals, handle_sigxcpu_globals)
 PHP_INI_END()
 
 /* フックを登録 */

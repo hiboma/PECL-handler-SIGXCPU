@@ -87,7 +87,7 @@ void apache_errorlog(const char * format, ...)
 	struct tm *ptime;
 	time_t t;
 	va_list ap;
-	
+
 	va_start(ap ,format);
 	t = time(NULL);
 	if(!setlocale(LC_TIME, "C")) {
@@ -103,28 +103,82 @@ void apache_errorlog(const char * format, ...)
 		perror("failed strftime():");
 		return;
 	}
-	fprintf(stderr, "[%s] [notice] ", date);
+	fprintf(stderr, "[%s] [info] ", date);
 	vfprintf(stderr, format, ap);
 	va_end(ap);
 	setlocale(LC_TIME, "");
+}
+
+static int (*saved_zend_printf)(const char *format, ...);
+static int (*saved_zend_write)(const char *str, uint str_length);
+
+static int printf_stderr(const char *format, ...)
+{
+	int retval;
+	va_list ap;
+
+	va_start(ap ,format);
+	retval = vfprintf(stderr, format, ap);
+	va_end(ap);
+	return retval;
+}
+
+static int write_stderr(const char *str, uint str_length)
+{
+	return fwrite(str, str_length, 1, stderr);
+}
+
+static void swap_zend_write_func(void)
+{
+	static bool swaped = false;
+
+	if(!swaped) {
+		saved_zend_printf = zend_printf;
+		saved_zend_write  = zend_write;
+		zend_printf = printf_stderr;
+		zend_write  = write_stderr;
+		swaped = true;
+	} else {
+		zend_printf = saved_zend_printf;
+		zend_write  = saved_zend_write;
+		swaped = false;
+	}
 }
 
 static void sigaction_sigxcpu(int signum, siginfo_t *info, void *data)
 {
 	const char *server_name = getenv("SERVER_NAME");
 	const char *remote_host = getenv("REMOTE_HOST");
+	
 	if(!remote_host)
 			remote_host = getenv("REMOTE_ADDR");
 
-	apache_errorlog("[%d] cacth SIGXCPU(%d) %s() at %s:%d %s %s\n",
-			info->si_pid,
-			num_called++,
-			get_active_function_name(TSRMLS_C),
-			zend_get_executed_filename(TSRMLS_C),
-			zend_get_executed_lineno(TSRMLS_C),
-			(server_name ? server_name : "-"),
-			(remote_host ? remote_host : "-"));
-			
+	if(handle_sigxcpu_globals.print_backtrace) {
+		/* with debug_print_backtrace() */
+		apache_errorlog("%d received SIGXCPU(%d) %s %s\n",
+						info->si_pid,
+						num_called++,
+						(server_name ? server_name : "-"),
+						(remote_host ? remote_host : "-"));
+		
+		/* dirty hack */
+		swap_zend_write_func();
+		zend_eval_string("debug_print_backtrace();",
+						 NULL,
+						 "debug_print_backtrace();");
+		swap_zend_write_func();
+	}
+	else {
+		/* without debug_print_backtrace() */
+		apache_errorlog("%d received SIGXCPU(%d) %s at %s:%d %s %s\n",
+						info->si_pid,
+						num_called++,
+						get_active_function_name(TSRMLS_C),
+						zend_get_executed_filename(TSRMLS_C),
+						zend_get_executed_lineno(TSRMLS_C),
+						(server_name ? server_name : "-"),
+						(remote_host ? remote_host : "-"));
+	}
 }
 
 static void setup_sigaction(void)
@@ -147,9 +201,7 @@ PHP_MINIT_FUNCTION(handle_sigxcpu)
 	REGISTER_INI_ENTRIES();
 
 	/* add your stuff here */
-	if (handle_sigxcpu_globals.enabled) {
-		setup_sigaction();
-	}
+	setup_sigaction();
 	
 	return SUCCESS;
 }
